@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Implant AI — Automatisation IA pour entreprises</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #070810;
+    --bg2:       #0b0c16;
+    --surface:   #0f1120;
+    --surface2:  #141628;
+    --border:    rgba(255,255,255,0.06);
+    --border-hi: rgba(99,179,255,0.2);
+    --blue:      #5b9fff;
+    --blue-hi:   #80b8ff;
+    --blue-dim:  rgba(91,159,255,0.12);
+    --text:      #e8eaf4;
+    --text-2:    #6b7399;
+    --text-3:    #343850;
+    --r:         12px;
+    --r-lg:      20px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    overflow-x: hidden;
+    max-width: 100vw;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── AMBIENT LIGHT ─── */
+  .ambient {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .ambient-1 {
+    width: 900px; height: 500px;
+    top: -200px; left: 50%; transform: translateX(-50%);
+    background: radial-gradient(ellipse, rgba(60,120,255,0.07) 0%, transparent 65%);
+    filter: blur(40px);
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0; z-index: 100;
+    height: 60px;
+    padding: 0 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s, border-color 0.3s;
+    border-bottom: 1px solid transparent;
+  }
+  nav.scrolled {
+    background: rgba(7,8,16,0.88);
+    backdrop-filter: blur(24px);
+    border-bottom-color: var(--border);
+  }
+
+  .logo {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #fff;
+    text-decoration: none;
+  }
+  .logo em {
+    font-style: normal;
+    color: var(--blue-hi);
+  }
+
+  .nav-links {
+    display: flex; gap: 32px; list-style: none;
+  }
+  .nav-links a {
+    font-size: 13px; font-weight: 500;
+    color: var(--text-2); text-decoration: none;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px; font-weight: 500;
+    color: var(--text);
+    text-decoration: none;
+    padding: 7px 18px;
+    border: 1px solid var(--border-hi);
+    border-radius: 8px;
+    background: var(--blue-dim);
+    transition: all .2s;
+  }
+  .nav-btn:hover {
+    background: rgba(91,159,255,0.2);
+    border-color: rgba(99,179,255,0.4);
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 100px 40px 80px;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .hero-spacer { height: 80px; }
+  @media (max-width: 860px) { .hero-spacer { display: none; } }
+
+  /* subtle grid */
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse 70% 55% at 50% 40%, black, transparent);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--blue-hi);
+    margin-bottom: 36px;
+    opacity: 0;
+    animation: up .7s ease forwards .1s;
+  }
+  .hero-eyebrow span {
+    width: 24px; height: 1px;
+    background: var(--blue);
+    display: block;
+  }
+
+  h1 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: clamp(38px, 5vw, 68px);
+    font-weight: 800;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    max-width: 820px;
+    opacity: 0;
+    animation: up .8s ease forwards .2s;
+  }
+  h1 .hl {
+    background: linear-gradient(100deg, #80b8ff 10%, #c084fc 90%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-body {
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--text-2);
+    line-height: 1.75;
+    max-width: 520px;
+    margin: 28px auto 0;
+    opacity: 0;
+    animation: up .8s ease forwards .3s;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 44px;
+    opacity: 0;
+    animation: up .8s ease forwards .4s;
+  }
+
+  .btn-fill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--blue);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 28px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all .2s;
+    box-shadow: 0 0 0 1px rgba(91,159,255,.3), 0 8px 32px rgba(60,100,255,.25);
+  }
+  .btn-fill:hover {
+    background: var(--blue-hi);
+    box-shadow: 0 0 0 1px rgba(91,159,255,.5), 0 8px 40px rgba(60,100,255,.4);
+    transform: translateY(-1px);
+  }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-2);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    text-decoration: none;
+    background: rgba(255,255,255,.02);
+    transition: all .2s;
+  }
+  .btn-outline:hover {
+    color: var(--text);
+    border-color: rgba(255,255,255,.12);
+    background: rgba(255,255,255,.04);
+  }
+
+  /* hero features strip */
+  .hero-strip {
+    display: flex;
+    gap: 0;
+    margin-top: 80px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    opacity: 0;
+    animation: up .8s ease forwards .6s;
+    position: relative; z-index: 1;
+    max-width: 780px;
+    width: 100%;
+  }
+  .strip-item {
+    flex: 1;
+    padding: 20px 24px;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-2);
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .strip-item:last-child { border-right: none; }
+  .strip-item:hover { background: var(--surface2); color: var(--text); }
+  .strip-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--blue);
+    box-shadow: 0 0 8px var(--blue);
+    flex-shrink: 0;
+  }
+
+
+
+  /* ─── SECTIONS BASE ─── */
+  section { padding: 110px 48px; position: relative; z-index: 1; }
+
+  /* ─── MAX WIDTH CONTAINER ─── */
+  .inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue-hi);
+    margin-bottom: 20px;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 20px; height: 1px;
+    background: var(--blue);
+  }
+
+  .sh {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: clamp(30px, 3.5vw, 48px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  .sh .hl {
+    background: linear-gradient(100deg, #80b8ff 10%, #c084fc 90%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .sdesc {
+    font-size: 15px;
+    color: var(--text-2);
+    line-height: 1.8;
+    max-width: 480px;
+  }
+
+  /* ─── SERVICES ─── */
+  #services { background: var(--bg2); }
+
+  .svc-top {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 56px;
+  }
+  .svc-top .eyebrow { justify-content: center; }
+  .svc-top .eyebrow::before { display: none; }
+  .svc-top .sdesc { max-width: 100%; }
+
+  .svc-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 20px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+  }
+
+  .svc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 36px 32px;
+    transition: background .25s, border-color .25s, box-shadow .25s;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .svc::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--blue), #c084fc);
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    opacity: 0;
+    transition: opacity .3s;
+  }
+  .svc:hover {
+    background: var(--surface2);
+    border-color: var(--border-hi);
+    box-shadow: 0 8px 40px rgba(0,0,0,.3), 0 0 30px rgba(91,159,255,.06);
+  }
+  .svc:hover::after { opacity: 1; }
+
+  .svc-num {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--blue); margin-bottom: 16px;
+  }
+  .svc-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 22px; font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin-bottom: 10px;
+  }
+  .svc-body {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.75;
+    margin-bottom: 28px;
+  }
+
+  /* ── ANIMATION ZONE ── */
+  .svc-anim {
+    margin-top: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    padding: 18px 20px;
+    min-height: 96px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    opacity: 0.60;
+    transition: opacity .35s ease;
+  }
+  .svc:hover .svc-anim { opacity: 1; }
+
+
+
+  /* 01 — Timeline RDV */
+  .anim-rdv {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .rdv-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity .4s ease, transform .4s ease;
+  }
+  .rdv-step.on { opacity: 1; transform: none; }
+  .rdv-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    transition: border-color .3s, box-shadow .3s;
+  }
+  .rdv-step.on .rdv-icon {
+    border-color: var(--border-hi);
+    box-shadow: 0 0 12px rgba(91,159,255,.15);
+  }
+  .rdv-step.done .rdv-icon {
+    border-color: rgba(52,211,153,.4);
+    box-shadow: 0 0 12px rgba(52,211,153,.15);
+  }
+  .rdv-label {
+    font-size: 10px; font-weight: 500;
+    color: var(--text-3);
+    letter-spacing: .04em;
+    white-space: nowrap;
+  }
+  .rdv-step.on .rdv-label { color: var(--text-2); }
+  .rdv-arrow {
+    color: var(--text-3);
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity .4s ease .1s;
+    margin-bottom: 20px;
+  }
+  .rdv-arrow.on { opacity: 1; color: var(--blue); }
+
+  /* 02 — Inbox */
+  .anim-inbox {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    width: 100%;
+  }
+  .inbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: opacity .35s ease, transform .35s ease;
+    padding: 7px 10px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+  }
+  .inbox-row.on {
+    opacity: 1;
+    transform: none;
+  }
+  .inbox-row.on.tagged {
+    border-color: var(--border);
+    background: var(--surface2);
+  }
+  .inbox-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--blue);
+    flex-shrink: 0;
+    box-shadow: 0 0 6px var(--blue);
+  }
+  .inbox-from {
+    font-size: 12px; font-weight: 600;
+    color: var(--text);
+    flex-shrink: 0;
+    width: 90px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .inbox-subject {
+    font-size: 11px;
+    color: var(--text-2);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .inbox-tag {
+    font-size: 10px; font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity .3s ease .2s;
+    flex-shrink: 0;
+  }
+  .inbox-row.tagged .inbox-tag { opacity: 1; }
+  .tag-urgent { background: rgba(239,68,68,.15); color: #f87171; }
+  .tag-draft  { background: rgba(91,159,255,.15); color: var(--blue-hi); }
+  .tag-later  { background: rgba(168,85,247,.15); color: #c084fc; }
+
+  /* 04 — WhatsApp */
+  .anim-wa {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+  .wa-bubble {
+    max-width: 80%;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    opacity: 0;
+    transition: opacity .4s ease, transform .4s ease;
+    transform: translateY(6px);
+    position: relative;
+  }
+  .wa-bubble.on { opacity: 1; transform: none; }
+  .wa-left {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    border-bottom-left-radius: 2px;
+    align-self: flex-start;
+  }
+  .wa-right {
+    background: rgba(91,159,255,.15);
+    border: 1px solid var(--border-hi);
+    color: var(--text);
+    border-bottom-right-radius: 2px;
+    align-self: flex-end;
+  }
+  .wa-meta {
+    font-size: 10px;
+    color: var(--text-3);
+    text-align: right;
+    margin-top: 3px;
+  }
+  .wa-check { color: var(--blue-hi); }
+
+  /* 05 — Facture */
+  .anim-facture {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .fact-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .fact-title {
+    font-size: 11px; font-weight: 700;
+    color: var(--text);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+  .fact-badge {
+    font-size: 10px; font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 4px;
+    background: rgba(52,211,153,.12);
+    color: #34d399;
+    border: 1px solid rgba(52,211,153,.2);
+    opacity: 0;
+    transition: opacity .5s ease;
+  }
+  .fact-badge.on { opacity: 1; }
+  .fact-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-3);
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .fact-row:last-child { border-bottom: none; }
+  .fact-label { color: var(--text-2); }
+  .fact-val {
+    color: var(--text);
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity .4s ease;
+    font-variant-numeric: tabular-nums;
+  }
+  .fact-val.on { opacity: 1; }
+  .fact-total .fact-label {
+    font-weight: 700;
+    color: var(--text);
+  }
+  .fact-total .fact-val {
+    color: var(--blue-hi);
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  /* ─── PROCESS ─── */
+  #process { background: var(--bg); }
+  .proc-head { text-align: center; max-width: 560px; margin: 0 auto 80px; }
+  .proc-head .eyebrow { justify-content: center; }
+  .proc-head .eyebrow::before { display: none; }
+
+  .proc-steps {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    background: var(--border);
+  }
+  .proc-step {
+    background: var(--surface);
+    padding: 48px 32px;
+    border-right: 1px solid var(--border);
+    transition: background .25s;
+  }
+  .proc-step:last-child { border-right: none; }
+  .proc-step:hover { background: var(--surface2); }
+
+  .proc-n {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 44px; font-weight: 800;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, var(--blue-hi), #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 28px;
+  }
+  .proc-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 17px; font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .proc-body { font-size: 13px; color: var(--text-2); line-height: 1.75; }
+
+  /* ─── WHY ─── */
+  #why { background: var(--bg2); text-align: center; }
+
+  .why-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+    margin-top: 56px;
+    text-align: left;
+  }
+
+  .why-rows { display: flex; flex-direction: column; }
+  .why-row {
+    padding: 28px 0;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  .why-row:first-child { border-top: 1px solid var(--border); }
+  .why-arr {
+    color: var(--blue);
+    font-size: 16px;
+    margin-top: 1px;
+    transition: transform .2s;
+  }
+  .why-row:hover .why-arr { transform: translateX(4px); }
+  .why-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; letter-spacing: -0.01em; }
+  .why-body { font-size: 14px; color: var(--text-2); line-height: 1.7; }
+
+  .why-card {
+    border: 1px solid var(--border-hi);
+    border-radius: var(--r-lg);
+    padding: 44px;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+  }
+  .why-card::before {
+    content: '';
+    position: absolute;
+    top: -120px; left: -60px;
+    width: 340px; height: 340px;
+    background: radial-gradient(circle, rgba(91,159,255,.08) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .why-card-q {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 26px; font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.3;
+    margin-bottom: 20px;
+  }
+  .why-card-q .hl {
+    background: linear-gradient(100deg, #80b8ff, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .why-card-body { font-size: 14px; color: var(--text-2); line-height: 1.8; margin-bottom: 36px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tg {
+    font-size: 12px; font-weight: 500;
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border-hi);
+    color: var(--blue-hi);
+    background: var(--blue-dim);
+  }
+
+  /* ─── STACK ─── */
+  #stack { text-align: center; background: var(--bg); }
+  .stack-cap {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--text-3); margin-bottom: 40px;
+  }
+  .stack-row {
+    display: flex; justify-content: center;
+    align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .stk {
+    font-size: 13px; font-weight: 500;
+    color: var(--text-2);
+    padding: 9px 22px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    transition: all .2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stk:hover {
+    color: var(--text);
+    border-color: var(--border-hi);
+    background: var(--surface2);
+  }
+  .stk-d {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--blue);
+    box-shadow: 0 0 8px var(--blue);
+  }
+
+  /* ─── APPS ─── */
+  .apps-divider {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 56px auto 0;
+    max-width: 480px;
+  }
+  .apps-divider::before, .apps-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+  .apps-divider-label {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--text-3);
+    white-space: nowrap;
+  }
+  .apps-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 28px;
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .app-tag {
+    font-size: 13px; font-weight: 500;
+    color: var(--text-2);
+    padding: 8px 18px;
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    background: var(--surface);
+    transition: all .25s;
+    cursor: default;
+  }
+  .app-tag:hover {
+    color: var(--blue-hi);
+    border-color: var(--border-hi);
+    background: var(--blue-dim);
+    box-shadow: 0 0 16px rgba(91,159,255,.08);
+  }
+
+  /* ─── CTA ─── */
+  #contact {
+    background: var(--bg2);
+    text-align: center;
+    overflow: hidden;
+  }
+  #contact::before {
+    content: '';
+    position: absolute;
+    width: 800px; height: 500px;
+    top: 50%; left: 50%; transform: translate(-50%,-60%);
+    background: radial-gradient(ellipse, rgba(60,100,255,.07) 0%, transparent 65%);
+    filter: blur(40px);
+    pointer-events: none;
+  }
+  .cta-inner { max-width: 580px; margin: 0 auto; position: relative; }
+  .cta-inner .sh { margin-bottom: 16px; }
+  .cta-inner .sdesc { margin: 0 auto 40px; }
+
+  .cta-box {
+    display: flex;
+    max-width: 420px;
+    margin: 0 auto;
+    border-radius: 12px;
+    border: 1px solid var(--border-hi);
+    background: var(--surface);
+    overflow: hidden;
+    padding: 5px;
+    gap: 5px;
+  }
+  .cta-box input {
+    flex: 1;
+    background: transparent;
+    border: none; outline: none;
+    color: var(--text);
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    padding: 0 14px;
+  }
+  .cta-box input::placeholder { color: var(--text-3); }
+  .cta-box button {
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 22px;
+    font-size: 13px; font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .2s;
+    box-shadow: 0 0 20px rgba(91,159,255,.25);
+  }
+  .cta-box button:hover { background: var(--blue-hi); }
+  .cta-note { font-size: 12px; color: var(--text-3); margin-top: 16px; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    padding: 28px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative; z-index: 1;
+  }
+  .foot-logo {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 16px; font-weight: 700;
+    letter-spacing: -0.02em; color: #fff;
+  }
+  .foot-logo em { font-style: normal; color: var(--blue-hi); }
+  .foot-r { font-size: 12px; color: var(--text-3); }
+
+  /* ─── REVEAL ─── */
+  .r { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+  .r.v { opacity: 1; transform: none; }
+
+  /* ─── KEYFRAMES ─── */
+  @keyframes up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 860px) {
+
+    /* NAV */
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+
+    /* SECTIONS */
+    section { padding: 72px 20px; }
+    .inner { padding: 0; }
+
+    /* HERO */
+    .hero { min-height: auto; padding-top: 160px; padding-bottom: 60px; }
+    .hero > * { margin-top: 0; }
+    h1 { font-size: 36px; }
+    .hero-body { font-size: 15px; margin: 24px auto 0; }
+    .hero-ctas { margin-top: 32px; }
+    .hero-ctas { flex-direction: column; align-items: center; width: 100%; }
+    .btn-fill, .btn-outline { width: 100%; justify-content: center; }
+    .hero-strip { display: none; }
+
+    /* SERVICES */
+    .svc-top { grid-template-columns: 1fr; gap: 16px; }
+    .svc-grid { grid-template-columns: 1fr; width: 100%; }
+    .svc { padding: 24px 20px; }
+    .svc.span2 { grid-column: span 1; }
+    .svc-list { border-left: none; padding-left: 0; border-top: 1px solid var(--border-hi); padding-top: 20px; }
+    .svc-anim { padding: 14px 12px; min-height: auto; overflow: hidden; }
+
+    /* Animation RDV */
+    .anim-rdv { gap: 2px; }
+    .rdv-icon { width: 28px; height: 28px; font-size: 12px; }
+    .rdv-label { font-size: 9px; }
+    .rdv-arrow { font-size: 10px; margin-bottom: 16px; }
+
+    /* Animation Inbox */
+    .inbox-row { gap: 6px; flex-wrap: nowrap; }
+    .inbox-from { font-size: 11px; min-width: 55px; max-width: 55px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .inbox-subject { font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+    .inbox-tag { font-size: 9px; padding: 2px 6px; flex-shrink: 0; }
+
+    /* Animation WhatsApp */
+    .wa-bubble { font-size: 12px; padding: 8px 12px; max-width: 88%; }
+
+    /* Animation Facture */
+    .anim-facture { padding: 12px 14px; }
+    .fact-row { font-size: 12px; }
+    .fact-header { flex-wrap: wrap; gap: 8px; }
+
+    /* PROCESS */
+    .proc-steps { grid-template-columns: 1fr 1fr; }
+    .proc-step { padding: 28px 20px; }
+    .proc-n { font-size: 32px; }
+
+    /* WHY */
+    .why-inner { grid-template-columns: 1fr; gap: 40px; text-align: left; }
+    .why-card { padding: 24px 20px; }
+    .why-card-q { font-size: 20px; }
+    .tags { flex-wrap: wrap; }
+
+    /* STACK */
+    .stack-row { gap: 8px; }
+    .apps-cloud { gap: 8px; }
+    .apps-divider { max-width: 100%; }
+    .app-tag { font-size: 12px; padding: 6px 14px; }
+
+    /* CTA */
+    .cta-box { flex-direction: column; max-width: 100%; }
+    .cta-box input { padding: 12px 14px; width: 100%; }
+    .cta-box button { width: 100%; padding: 12px; }
+    .cta-note { font-size: 11px; }
+
+    /* FOOTER */
+    footer { padding: 24px 20px; flex-direction: column; gap: 10px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="ambient ambient-1"></div>
+
+<nav id="nav">
+  <div class="inner" style="display:flex;align-items:center;justify-content:space-between;width:100%;height:100%;">
+    <a href="#" class="logo" style="text-decoration:none;">Implant <em>AI</em></a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#process">Méthode</a></li>
+      <li><a href="#why">Pourquoi nous</a></li>
+    </ul>
+    <a href="#contact" class="nav-btn">Audit gratuit</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-spacer"></div>
+  <div class="hero-eyebrow"><span></span>Automatisation IA · Entreprises<span></span></div>
+  <h1>Votre entreprise travaille.<br><span class="hl">Vos IA aussi.</span><br>24h&nbsp;/&nbsp;24.</h1>
+  <p class="hero-body">Nous implantons des agents IA dans vos processus métier pour éliminer les tâches répétitives, ne manquer aucune opportunité et libérer votre équipe.</p>
+  <div class="hero-ctas">
+    <a href="#contact" class="btn-fill">Demander un audit gratuit →</a>
+    <a href="#services" class="btn-outline">Voir nos solutions</a>
+  </div>
+  <div class="hero-strip">
+    <div class="strip-item"><div class="strip-dot"></div>Rappels automatiques</div>
+    <div class="strip-item"><div class="strip-dot"></div>Triage d'emails IA</div>
+    <div class="strip-item"><div class="strip-dot"></div>Relance WhatsApp</div>
+    <div class="strip-item"><div class="strip-dot"></div>Avis Google auto</div>
+    <div class="strip-item"><div class="strip-dot"></div>Facturation auto</div>
+  </div>
+</section>
+
+
+
+<!-- SERVICES -->
+<section id="services">
+<div class="inner">
+  <div class="svc-top">
+    <div>
+      <div class="eyebrow r">Nos automatisations</div>
+      <h2 class="sh r">Quatre leviers.<br><span class="hl">Un seul objectif.</span></h2>
+    </div>
+    <p class="sdesc r">Chaque automatisation est conçue pour s'intégrer à vos outils existants, sans friction. Pas de refonte. Pas de formation longue. Juste des résultats dès la première semaine.</p>
+  </div>
+
+  <div class="svc-grid">
+    <!-- 01 RAPPELS -->
+    <div class="svc r">
+      <div class="svc-num">01 · Rappels</div>
+      <div class="svc-title">Confirmation & rappel de rendez-vous</div>
+      <p class="svc-body">SMS et emails automatiques avant chaque RDV. Vos clients sont prévenus, vos no-shows chutent. Comme Doctolib, mais pour votre activité.</p>
+      <div class="svc-anim">
+        
+        <div class="anim-rdv" id="anim-rdv">
+          <div class="rdv-step" data-step="0"><div class="rdv-icon">📅</div><div class="rdv-label">Agenda</div></div>
+          <div class="rdv-arrow" data-arrow="0">→</div>
+          <div class="rdv-step" data-step="1"><div class="rdv-icon">🤖</div><div class="rdv-label">Agent IA</div></div>
+          <div class="rdv-arrow" data-arrow="1">→</div>
+          <div class="rdv-step" data-step="2"><div class="rdv-icon">💬</div><div class="rdv-label">SMS</div></div>
+          <div class="rdv-arrow" data-arrow="2">→</div>
+          <div class="rdv-step" data-step="3"><div class="rdv-icon">✅</div><div class="rdv-label">Confirmé</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 02 EMAIL -->
+    <div class="svc r">
+      <div class="svc-num">02 · Email IA</div>
+      <div class="svc-title">Triage & réponses intelligentes par email</div>
+      <p class="svc-body">L'agent IA lit vos mails entrants, les classe par priorité et prépare des brouillons prêts à envoyer. Vous validez en 10 secondes.</p>
+      <div class="svc-anim">
+        
+        <div class="anim-inbox" id="anim-inbox">
+          <div class="inbox-row" data-i="0">
+            <div class="inbox-dot"></div>
+            <div class="inbox-from">Martin D.</div>
+            <div class="inbox-subject">Devis pour rénovation...</div>
+            <div class="inbox-tag tag-urgent">Urgent</div>
+          </div>
+          <div class="inbox-row" data-i="1">
+            <div class="inbox-dot"></div>
+            <div class="inbox-from">Sophie L.</div>
+            <div class="inbox-subject">Suite à notre échange...</div>
+            <div class="inbox-tag tag-draft">Brouillon ✓</div>
+          </div>
+          <div class="inbox-row" data-i="2">
+            <div class="inbox-dot"></div>
+            <div class="inbox-from">Newsletter</div>
+            <div class="inbox-subject">Offre spéciale ce mois...</div>
+            <div class="inbox-tag tag-later">Plus tard</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 04 DEVIS WHATSAPP -->
+    <div class="svc r">
+      <div class="svc-num">03 · Devis</div>
+      <div class="svc-title">Relance de devis par WhatsApp</div>
+      <p class="svc-body">Un agent surveille vos devis sans réponse et vous envoie un message WhatsApp pour valider la relance avant d'agir. Vous gardez le contrôle.</p>
+      <div class="svc-anim">
+        
+        <div class="anim-wa" id="anim-wa">
+          <div class="wa-bubble wa-left" data-w="0">
+            🤖 Devis #042 sans réponse depuis 5j. Je relance Thomas B. ?
+          </div>
+          <div class="wa-bubble wa-right" data-w="1">
+            Oui, vas-y 👍
+            <div class="wa-meta"><span class="wa-check">✓✓</span> 09:14</div>
+          </div>
+          <div class="wa-bubble wa-left" data-w="2">
+            Relance envoyée ✅
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 05 FACTURATION -->
+    <div class="svc r">
+      <div class="svc-num">04 · Facturation</div>
+      <div class="svc-title">Automatisation complète de la facturation</div>
+      <p class="svc-body">De la validation du devis à l'émission de la facture, en passant par les relances de paiement. Votre comptabilité tourne sans que vous y touchiez.</p>
+      <div class="svc-anim">
+        
+        <div class="anim-facture" id="anim-fact">
+          <div class="fact-header">
+            <div class="fact-title">Facture #2024-089</div>
+            <div class="fact-badge" id="fact-badge">Envoyée ✓</div>
+          </div>
+          <div class="fact-row"><span class="fact-label">Client</span><span class="fact-val" data-f="0">Dupont SARL</span></div>
+          <div class="fact-row"><span class="fact-label">Prestation</span><span class="fact-val" data-f="1">Automatisation CRM</span></div>
+          <div class="fact-row"><span class="fact-label">Échéance</span><span class="fact-val" data-f="2">30 jours</span></div>
+          <div class="fact-row fact-total"><span class="fact-label">Total TTC</span><span class="fact-val" data-f="3">2 400,00 €</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+<div class="inner">
+  <div class="proc-head">
+    <div class="eyebrow r">Méthode</div>
+    <h2 class="sh r">Déployé en <span class="hl">4 étapes</span></h2>
+    <p class="sdesc r" style="margin:0 auto;">De l'audit au suivi continu, on s'occupe de tout.</p>
+  </div>
+  <div class="proc-steps">
+    <div class="proc-step r">
+      <div class="proc-n">01</div>
+      <div class="proc-title">Audit offert</div>
+      <p class="proc-body">On cartographie vos processus et identifie les tâches automatisables à fort impact.</p>
+    </div>
+    <div class="proc-step r">
+      <div class="proc-n">02</div>
+      <div class="proc-title">Architecture</div>
+      <p class="proc-body">On conçoit le système sur-mesure avec les bons outils pour votre contexte.</p>
+    </div>
+    <div class="proc-step r">
+      <div class="proc-n">03</div>
+      <div class="proc-title">Déploiement</div>
+      <p class="proc-body">Intégration en 72h en moyenne. Vos équipes sont formées, tout est documenté.</p>
+    </div>
+    <div class="proc-step r">
+      <div class="proc-n">04</div>
+      <div class="proc-title">Suivi continu</div>
+      <p class="proc-body">On monitore, on optimise et on maintient vos agents IA à jour, au fil de votre croissance.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- WHY -->
+<section id="why">
+<div class="inner">
+  <div class="eyebrow r" style="justify-content:center;">Pourquoi nous</div>
+  <h2 class="sh r" style="text-align:center;">L'IA qui <span class="hl">connaît votre terrain.</span></h2>
+  <div class="why-inner">
+    <div class="why-rows">
+      <div class="why-row r">
+        <div class="why-arr">→</div>
+        <div>
+          <div class="why-title">Zéro jargon, 100% résultats</div>
+          <p class="why-body">Pas besoin de comprendre l'IA pour en profiter. On traduit la technologie en économies de temps concrètes.</p>
+        </div>
+      </div>
+      <div class="why-row r">
+        <div class="why-arr">→</div>
+        <div>
+          <div class="why-title">Sur-mesure, pas générique</div>
+          <p class="why-body">Chaque automatisation est conçue pour vos outils, votre secteur, votre façon de travailler. Rien de pré-packagé.</p>
+        </div>
+      </div>
+      <div class="why-row r">
+        <div class="why-arr">→</div>
+        <div>
+          <div class="why-title">Interlocuteur unique</div>
+          <p class="why-body">Un seul point de contact du diagnostic au suivi. Disponible, réactif, responsable.</p>
+        </div>
+      </div>
+      <div class="why-row r">
+        <div class="why-arr">→</div>
+        <div>
+          <div class="why-title">Technologie de pointe</div>
+          <p class="why-body">Nous utilisons n8n, Antigravity et Claude Code pour construire des systèmes robustes, maintenables et évolutifs.</p>
+        </div>
+      </div>
+    </div>
+    <div class="why-card r">
+      <div class="why-card-q">Les dirigeants qui automatisent aujourd'hui prendront <span class="hl">3 ans d'avance</span> sur ceux qui attendent.</div>
+      <p class="why-card-body">Les entreprises qui adoptent l'IA dans leurs opérations dès maintenant ne se contentent pas de gagner du temps. Elles restructurent leur modèle pour croître sans embaucher davantage.</p>
+      <div class="tags">
+        <span class="tg">PME</span>
+        <span class="tg">Artisans</span>
+        <span class="tg">Agences</span>
+        <span class="tg">Consultants</span>
+        <span class="tg">Cabinets</span>
+        <span class="tg">Indépendants</span>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- STACK -->
+<section id="stack">
+<div class="inner">
+  <div class="apps-divider r">
+    <div class="apps-divider-label">Connexion avec vos applications</div>
+  </div>
+  <div class="apps-cloud">
+    <div class="app-tag r">Notion</div>
+    <div class="app-tag r">Gmail</div>
+    <div class="app-tag r">Google Drive</div>
+    <div class="app-tag r">Google Sheets</div>
+    <div class="app-tag r">WhatsApp</div>
+    <div class="app-tag r">Telegram</div>
+    <div class="app-tag r">SMS</div>
+    <div class="app-tag r">Documents administratifs</div>
+    <div class="app-tag r">Google Agenda</div>
+    <div class="app-tag r" style="color: var(--text-3); border-style: dashed;">+ bien d'autres sur demande</div>
+  </div>
+</div>
+</section>
+
+<!-- CTA -->
+<section id="contact">
+  <div class="cta-inner">
+    <div class="eyebrow r" style="justify-content:center;">Passez à l'action</div>
+    <h2 class="sh r">Prêt à <span class="hl">libérer votre équipe ?</span></h2>
+    <p class="sdesc r" style="margin:0 auto 40px;">Audit gratuit de 30 minutes. On identifie ensemble les 3 automatisations qui auraient le plus d'impact dans votre activité. Sans engagement.</p>
+    <div class="cta-box r">
+      <input type="email" placeholder="Votre adresse email professionnelle">
+      <button type="button">Réserver →</button>
+    </div>
+    <p class="cta-note r">✓ Gratuit &nbsp;·&nbsp; ✓ Sans engagement &nbsp;·&nbsp; ✓ Réponse sous 24h</p>
+  </div>
+</section>
+
+<footer>
+  <div class="inner" style="display:flex;justify-content:space-between;align-items:center;">
+    <div class="foot-logo">Implant <em>AI</em></div>
+    <div class="foot-r">© 2026 · Automatisation IA · France</div>
+  </div>
+</footer>
+
+<script>
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40));
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('v'); io.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.r').forEach(el => io.observe(el));
+
+  /* ── ANIMATIONS SYNCHRONISÉES ── */
+
+  const LOOP = 4500;
+  let animStarted = false;
+
+  function runRdv() {
+    const steps = document.querySelectorAll('#anim-rdv .rdv-step');
+    const arrows = document.querySelectorAll('#anim-rdv .rdv-arrow');
+    steps.forEach(s => s.classList.remove('on','done'));
+    arrows.forEach(a => a.classList.remove('on'));
+    let i = 0;
+    const tick = setInterval(() => {
+      if (i < steps.length) {
+        steps[i].classList.add('on');
+        if (i === steps.length - 1) steps[i].classList.add('done');
+        if (i < arrows.length) arrows[i].classList.add('on');
+        i++;
+      } else clearInterval(tick);
+    }, 600);
+  }
+
+  function runInbox() {
+    const rows = document.querySelectorAll('#anim-inbox .inbox-row');
+    rows.forEach(r => r.classList.remove('on','tagged'));
+    let i = 0;
+    const tick = setInterval(() => {
+      if (i < rows.length) {
+        rows[i].classList.add('on');
+        const idx = i;
+        setTimeout(() => rows[idx] && rows[idx].classList.add('tagged'), 500);
+        i++;
+      } else clearInterval(tick);
+    }, 550);
+  }
+
+  function runWa() {
+    const bubbles = document.querySelectorAll('#anim-wa .wa-bubble');
+    bubbles.forEach(b => b.classList.remove('on'));
+    let i = 0;
+    const tick = setInterval(() => {
+      if (i < bubbles.length) { bubbles[i].classList.add('on'); i++; }
+      else clearInterval(tick);
+    }, 800);
+  }
+
+  function runFact() {
+    const vals = document.querySelectorAll('#anim-fact .fact-val');
+    const badge = document.getElementById('fact-badge');
+    vals.forEach(v => v.classList.remove('on'));
+    badge.classList.remove('on');
+    let i = 0;
+    const tick = setInterval(() => {
+      if (i < vals.length) { vals[i].classList.add('on'); i++; }
+      else { clearInterval(tick); setTimeout(() => badge.classList.add('on'), 300); }
+    }, 450);
+  }
+
+  function runAll() { runRdv(); runInbox(); runWa(); runFact(); }
+
+  const svcSection = document.getElementById('services');
+  const svcObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !animStarted) {
+        animStarted = true;
+        runAll();
+        setInterval(runAll, LOOP);
+        svcObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  svcObs.observe(svcSection);
+</script>
+</body>
+</html>
